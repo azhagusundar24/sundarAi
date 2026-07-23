@@ -1,0 +1,59 @@
+<div class="chat-wrapper">
+  <header class="chat-header">
+    <div class="header-title">
+      <span class="dot"></span>
+      Gemini Chat
+    </div>
+    <button class="clear-btn" (click)="clearChat()" [disabled]="messages.length === 0">
+      Clear
+    </button>
+  </header>
+
+  <div class="chat-messages">
+    <div class="empty-state" *ngIf="messages.length === 0">
+      Ask me anything to get started.
+    </div>
+
+    <div
+      *ngFor="let message of messages"
+      class="message-row"
+      [class.user-row]="message.role === 'user'"
+      [class.model-row]="message.role === 'model'"
+    >
+      <div class="bubble" [class.user-bubble]="message.role === 'user'" [class.model-bubble]="message.role === 'model'">
+        {{ message.text }}
+      </div>
+    </div>
+
+    <div class="message-row model-row" *ngIf="isLoading">
+      <div class="bubble model-bubble typing">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+
+    <div class="error-banner" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <div #scrollAnchor></div>
+  </div>
+
+  <form class="chat-input-bar" (ngSubmit)="sendMessage()">
+    <textarea
+      class="chat-input"
+      rows="1"
+      placeholder="Type a message..."
+      [(ngModel)]="userInput"
+      name="userInput"
+      (keydown.enter)="onEnter($event)"
+      [disabled]="isLoading"
+    ></textarea>
+    <button
+      type="submit"
+      class="send-btn"
+      [disabled]="isLoading || !userInput.trim()"
+    >
+      Send
+    </button>
+  </form>
+</div>
