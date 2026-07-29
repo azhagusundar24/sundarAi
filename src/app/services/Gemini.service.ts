@@ -30,6 +30,7 @@ interface GeminiResponse {
 export class GeminiService {
   // Free-tier model. Swap for 'gemini-2.5-flash-lite' or a newer model
   // name if you hit rate limits or Google renames the free-tier default.
+  
   private readonly model = 'gemini-3.6-flash';
   private readonly baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
 
@@ -43,6 +44,9 @@ export class GeminiService {
    * model's reply as plain text.
    */
   async sendMessage(history: ChatMessage[]): Promise<string> {
+
+     console.log("API Keys:", this.apiKeys);
+  console.log("Current Key:", this.apiKeys[this.currentKeyIndex]);
 
   const contents: GeminiContent[] = history.map(m => ({
     role: m.role,
