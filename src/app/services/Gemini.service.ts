@@ -20,7 +20,6 @@ interface GeminiResponse {
   }[];
   error?: {
     message: string;
-    code?: number;
   };
 }
 
@@ -28,11 +27,6 @@ interface GeminiResponse {
   providedIn: 'root'
 })
 export class GeminiService {
-  // Free-tier model. Swap for 'gemini-2.5-flash-lite' or a newer model
-  // name if you hit rate limits or Google renames the free-tier default.
-  
-  private readonly model = 'gemini-3.6-flash';
-  private readonly baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
 
   // Calls the Vercel Serverless Function
   private readonly apiUrl = '/api/chat';
@@ -41,23 +35,14 @@ export class GeminiService {
 
   async sendMessage(history: ChatMessage[]): Promise<string> {
 
-     console.log("API Keys:", this.apiKeys);
-  console.log("Current Key:", this.apiKeys[this.currentKeyIndex]);
-
-  const contents: GeminiContent[] = history.map(m => ({
-    role: m.role,
-    parts: [{ text: m.text }]
-  }));
-
-  const body = { contents };
-
-  let lastError: any;
-
-  // Try each API key until one succeeds
-  for (let i = 0; i < this.apiKeys.length; i++) {
-
-    const keyIndex = (this.currentKeyIndex + i) % this.apiKeys.length;
-    const apiKey = this.apiKeys[keyIndex];
+    const contents: GeminiContent[] = history.map(message => ({
+      role: message.role,
+      parts: [
+        {
+          text: message.text
+        }
+      ]
+    }));
 
     const body = {
       contents
@@ -69,8 +54,7 @@ export class GeminiService {
         this.http.post<GeminiResponse>(this.apiUrl, body)
       );
 
-      const text =
-        response.candidates?.[0]?.content?.parts?.[0]?.text;
+      const text = response.candidates?.[0]?.content?.parts?.[0]?.text;
 
       if (!text) {
         throw new Error(
