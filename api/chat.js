@@ -3,7 +3,7 @@ const API_KEYS = [
   process.env.GEMINI_API_KEY_2
 ];
 
-const MODEL = "gemini-2.5-flash";
+const MODEL = "gemini-2.5-flash-lite";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
